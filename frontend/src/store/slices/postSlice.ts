@@ -76,7 +76,7 @@ const postsSlice = createSlice({
       state.updatePost.loading = false;
       state.updatePost.error = true;
     },
-    deletePostRequest(state) {
+    deletePostRequest(state, action: PayloadAction<number>) {
       state.deletePost.loading = true;
       state.deletePost.error = false;
     },

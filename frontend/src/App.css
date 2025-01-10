@@ -1,0 +1,28 @@
+.pixel-border {
+  display: inline-block;
+  border: 4px solid #ffcc00;
+  padding: 4px 8px;
+  box-shadow: 4px 4px 0 #1e1e1e;
+}
+.pixel-border:hover {
+  box-shadow: -4px -4px 0 #1e1e1e;
+  background-color: #ffcc00;
+  color: #1e1e1e;
+}
+.table-row {
+  background-color: #f0f0f0; /* Color base neutro */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.table-row:hover {
+  background-color: #d4e6f1; /* Azul pastel suave */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+  transform: scale(1.02); /* Leve ampliación para resaltar la fila */
+  cursor: pointer; /* Indica interactividad */
+}
+
+.table-header {
+  background-color: #37474f; /* Fondo oscuro para contraste */
+  color: #ffffff; /* Texto claro para legibilidad */
+}
+
