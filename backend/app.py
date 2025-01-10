@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 from models import db
 from routes.posts import posts
 from config import Config
@@ -31,6 +32,7 @@ logging.getLogger().setLevel(logging.INFO)
 
 def create_app():
     app = Flask(__name__)
+    CORS(app, resources={r"/*": {"origins": "*"}})
     app.config.from_object(Config)
 
     # Initialize extensions
