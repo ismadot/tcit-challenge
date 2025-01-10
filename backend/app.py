@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from models import db
 from routes.posts import posts
 from config import Config
@@ -40,6 +40,11 @@ def create_app():
     # Register blueprints
     app.register_blueprint(posts, url_prefix='/posts')
 
+    # Healthcheck endpoint
+    @app.route('/health', methods=['GET'])
+    def health_check():
+        return jsonify({"status": "ok"}), 200
+
     # Log database connection
     if 'DATABASE_URL' in os.environ:
         logging.info(f"Connected to PostgreSQL: {app.config['SQLALCHEMY_DATABASE_URI']}")
@@ -63,7 +68,6 @@ def create_app():
             logging.info("Database is ready and connected to an existing table.")
         except OperationalError as e:
             logging.warning("Database not initialized or table 'posts' does not exist. Error: %s", e)
-
     return app
 
 
