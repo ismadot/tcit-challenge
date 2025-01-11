@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addPostRequest, updatePostRequest } from "../store/slices/postSlice";
+import { RootState } from "../store";
 interface PostFormProps {
   editPost?: { id: number; name: string; description: string };
   onSaveComplete: () => void;
@@ -15,7 +16,13 @@ const PostForm: React.FC<PostFormProps> = ({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-
+  const [isSaved, setIsSaved] = useState(false);
+  const updatePostSelector = useSelector(
+    (state: RootState) => state.posts.updatePost
+  );
+  const addPostSelector = useSelector(
+    (state: RootState) => state.posts.addPost
+  );
   useEffect(() => {
     if (editPost) {
       setName(editPost.name);
@@ -23,6 +30,31 @@ const PostForm: React.FC<PostFormProps> = ({
       setIsEditing(true);
     }
   }, [editPost]);
+
+  // Trigger onSaveComplete after successful post add/update
+  useEffect(() => {
+    if (
+      !addPostSelector.loading &&
+      !addPostSelector.error &&
+      addPostSelector.data &&
+      isSaved
+    ) {
+      onSaveComplete();
+      setIsSaved(false);
+    }
+  }, [addPostSelector, onSaveComplete, isSaved]);
+
+  useEffect(() => {
+    if (
+      !updatePostSelector.loading &&
+      !updatePostSelector.error &&
+      updatePostSelector.data &&
+      isSaved
+    ) {
+      onSaveComplete();
+      setIsSaved(false);
+    }
+  }, [updatePostSelector, onSaveComplete, isSaved]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,10 +71,12 @@ const PostForm: React.FC<PostFormProps> = ({
     } else {
       dispatch(addPostRequest({ name, description }));
     }
-    onSaveComplete();
     setName("");
     setDescription("");
+    setIsSaved(true);
   };
+
+
 
   const handleReset = () => {
     setName("");
