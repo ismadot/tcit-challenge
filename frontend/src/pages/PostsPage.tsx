@@ -1,31 +1,46 @@
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  deletePostRequest,
   fetchPostsRequest,
+  deletePostRequest,
 } from "../store/slices/postSlice";
-import { RootState } from "../store";
+import PostFilter from "../components/Filter";
 import PostTable from "../components/PostTable";
-// import Table from "../components/Table";
-// import PostForm from "../components/PostForm";
 
 const PostsPage: React.FC = () => {
   const dispatch = useDispatch();
   const posts = useSelector(
-    (state: RootState) => state.posts.fetchPosts.data?.posts || []
+    (state: any) => state.posts.fetchPosts.data?.posts || []
   );
+  const [filteredPosts, setFilteredPosts] = useState(posts);
 
-  console.log("🚀 >> file: PostsPage.tsx:11 >> posts:", posts);
-
+  // Fetch posts when component mounts
   useEffect(() => {
     dispatch(fetchPostsRequest());
   }, [dispatch]);
+
+  // Update filteredPosts only if posts change
+  useEffect(() => {
+    if (filteredPosts !== posts) {
+      setFilteredPosts(posts);
+    }
+  }, [posts, filteredPosts]);
+
+  const handleFilterChange = (filter: string) => {
+    dispatch(fetchPostsRequest({ name: filter }));
+  };
+
   const handleDelete = (id: number) => {
     dispatch(deletePostRequest(id));
   };
+
   return (
-    <div>
-      <PostTable posts={posts} onDelete={handleDelete} />
+    <div className="p-4">
+      <h1 className="text-center text-2xl font-bold mb-4">Posts CRUD</h1>
+      <div className="mb-4">
+        <PostFilter onFilterChange={handleFilterChange} />
+      </div>
+      <PostTable posts={filteredPosts} onDelete={handleDelete} />
     </div>
   );
 };

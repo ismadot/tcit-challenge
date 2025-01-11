@@ -30,7 +30,10 @@ const postsSlice = createSlice({
   name: "posts",
   initialState,
   reducers: {
-    fetchPostsRequest(state) {
+    fetchPostsRequest(
+      state,
+      action: PayloadAction<{ name?: string } | undefined>
+    ) {
       state.fetchPosts.loading = true;
       state.fetchPosts.error = false;
     },

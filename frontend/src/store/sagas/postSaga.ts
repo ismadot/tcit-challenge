@@ -18,11 +18,15 @@ import {
 import { Post, PostRequestSuccess } from "../types";
 import { PayloadAction } from "@reduxjs/toolkit";
 
-function* fetchPostsSaga() {
+function* fetchPostsSaga(action: ReturnType<typeof fetchPostsRequest>) {
   try {
+    const params = action.payload?.name
+      ? { params: { name: action.payload.name } }
+      : {};
     const response: AxiosResponse<PostRequestSuccess> = yield call(
       api.get,
-      "/posts"
+      "/posts",
+      params
     );
     yield put(fetchPostsSuccess(response.data));
   } catch (error: unknown) {
