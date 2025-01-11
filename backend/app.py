@@ -77,4 +77,4 @@ def create_app():
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     app = create_app()
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5002,debug=True)
