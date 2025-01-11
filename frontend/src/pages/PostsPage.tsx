@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchPostsRequest,
@@ -8,25 +8,29 @@ import PostFilter from "../components/Filter";
 import PostTable from "../components/PostTable";
 import PostForm from "../components/PostForm";
 import { RootState } from "../store";
+import Paginator from "../components/Paginator";
 
 const PostsPage: React.FC = () => {
   const dispatch = useDispatch();
-  const posts = useSelector(
-    (state: RootState) => state.posts.fetchPosts.data?.posts || []
+  const postsData = useSelector(
+    (state: RootState) => state.posts.fetchPosts.data
   );
+  const posts = useMemo(() => postsData?.posts || [], [postsData]);
+  const totalPosts = postsData?.total || 0;
+
   const [filteredPosts, setFilteredPosts] = useState(posts);
+  const [perPage, setPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [editPost, setEditPost] = useState<null | {
     id: number;
     name: string;
     description: string;
   }>(null);
 
-  // Fetch posts when component mounts
   useEffect(() => {
-    dispatch(fetchPostsRequest());
-  }, [dispatch]);
+    dispatch(fetchPostsRequest({ per_page: perPage }));
+  }, [dispatch, perPage]);
 
-  // Update filteredPosts only if posts change
   useEffect(() => {
     if (filteredPosts !== posts) {
       setFilteredPosts(posts);
@@ -34,7 +38,7 @@ const PostsPage: React.FC = () => {
   }, [posts, filteredPosts]);
 
   const handleFilterChange = (filter: string) => {
-    dispatch(fetchPostsRequest({ name: filter }));
+    dispatch(fetchPostsRequest({ name: filter, per_page: perPage }));
   };
 
   const handleDelete = (id: number) => {
@@ -49,26 +53,43 @@ const PostsPage: React.FC = () => {
     setEditPost(post);
   };
 
-  const handleEditComplete = () => {
+  const handlePerPageChange = (newPerPage: number) => {
+    setPerPage(newPerPage);
+  };
+
+  const handleSaveComplete = () => {
+    dispatch(fetchPostsRequest({ per_page: perPage, page: currentPage }));
     setEditPost(null);
-    dispatch(fetchPostsRequest());
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    dispatch(fetchPostsRequest({ per_page: perPage, page }));
   };
 
   return (
     <div className="p-4">
       <h1 className="text-center text-2xl font-bold mb-4">Posts CRUD</h1>
       <div className="mb-4">
-        <PostFilter onFilterChange={handleFilterChange} />
+        <PostFilter
+          onFilterChange={handleFilterChange}
+          onPerPageChange={handlePerPageChange}
+        />
       </div>
       <PostTable
         posts={filteredPosts}
         onDelete={handleDelete}
         onEdit={handleEdit}
       />
+      <Paginator
+        currentPage={currentPage}
+        totalPages={Math.ceil(totalPosts / perPage)}
+        onPageChange={handlePageChange}
+      />
       <div className="mt-6">
         <PostForm
           editPost={editPost || undefined}
-          onEditComplete={handleEditComplete}
+          onSaveComplete={handleSaveComplete}
           onReset={() => setEditPost(null)}
         />
       </div>

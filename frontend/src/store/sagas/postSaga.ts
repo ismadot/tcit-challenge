@@ -20,9 +20,20 @@ import { PayloadAction } from "@reduxjs/toolkit";
 
 function* fetchPostsSaga(action: ReturnType<typeof fetchPostsRequest>) {
   try {
-    const params = action.payload?.name
-      ? { params: { name: action.payload.name } }
-      : {};
+    const filters = {
+      name: action.payload?.name,
+      per_page: action.payload?.per_page,
+      page: action.payload?.page,
+    };
+
+    const params = {
+      params: Object.fromEntries(
+        Object.entries(filters).filter(
+          ([_, value]) => value !== undefined && value !== null
+        )
+      ),
+    };
+
     const response: AxiosResponse<PostRequestSuccess> = yield call(
       api.get,
       "/posts",

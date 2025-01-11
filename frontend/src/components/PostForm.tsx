@@ -3,12 +3,12 @@ import { useDispatch } from "react-redux";
 import { addPostRequest, updatePostRequest } from "../store/slices/postSlice";
 interface PostFormProps {
   editPost?: { id: number; name: string; description: string };
-  onEditComplete: () => void;
+  onSaveComplete: () => void;
   onReset: () => void;
 }
 const PostForm: React.FC<PostFormProps> = ({
   editPost,
-  onEditComplete,
+  onSaveComplete,
   onReset,
 }) => {
   const dispatch = useDispatch();
@@ -26,13 +26,20 @@ const PostForm: React.FC<PostFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validation for empty name
+    if (name.trim() === "") {
+      alert("The 'Name' field cannot be empty.");
+      return;
+    }
+
     if (isEditing && editPost) {
       dispatch(updatePostRequest({ id: editPost.id, name, description }));
-      onEditComplete();
       setIsEditing(false);
     } else {
       dispatch(addPostRequest({ name, description }));
     }
+    onSaveComplete();
     setName("");
     setDescription("");
   };
@@ -41,20 +48,25 @@ const PostForm: React.FC<PostFormProps> = ({
     setName("");
     setDescription("");
     onReset();
+    setIsEditing(false);
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-6 bg-purple-700 text-white rounded-md border-4 border-pink-500 shadow-pixel mb-6 relative"
+      className={`p-4 rounded-md border-4 shadow-pixel mb-4 relative transition-colors ${
+        isEditing
+          ? "bg-green-700 text-white border-green-500"
+          : "bg-purple-700 text-white border-pink-500"
+      }`}
     >
       <h2 className="text-xl font-bold mb-4 text-center">
         {isEditing ? "Edit Post" : "Create a New Post"}
       </h2>
-
       {isEditing && (
         <button
           onClick={handleReset}
+          aria-label="Cancel editing"
           className="absolute top-2 right-3 text-red-500 hover:text-red-700"
         >
           ❌
