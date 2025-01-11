@@ -60,7 +60,12 @@ const postsSlice = createSlice({
       state.addPost.loading = false;
       state.addPost.error = true;
     },
-    updatePostRequest(state) {
+    updatePostRequest(
+      state,
+      action: PayloadAction<
+        { id: number; name: string; description: string } | undefined
+      >
+    ) {
       state.updatePost.loading = true;
       state.updatePost.error = false;
     },

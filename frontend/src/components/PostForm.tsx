@@ -1,29 +1,65 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { addPostRequest } from "../store/slices/postSlice";
-
-const PostForm: React.FC = () => {
+import { addPostRequest, updatePostRequest } from "../store/slices/postSlice";
+interface PostFormProps {
+  editPost?: { id: number; name: string; description: string };
+  onEditComplete: () => void;
+  onReset: () => void;
+}
+const PostForm: React.FC<PostFormProps> = ({
+  editPost,
+  onEditComplete,
+  onReset,
+}) => {
   const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    if (editPost) {
+      setName(editPost.name);
+      setDescription(editPost.description);
+      setIsEditing(true);
+    }
+  }, [editPost]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (name && description) {
-      dispatch(addPostRequest({ name, description }));
-      setName("");
-      setDescription("");
+    if (isEditing && editPost) {
+      dispatch(updatePostRequest({ id: editPost.id, name, description }));
+      onEditComplete();
+      setIsEditing(false);
     } else {
-      alert("Please fill out both fields.");
+      dispatch(addPostRequest({ name, description }));
     }
+    setName("");
+    setDescription("");
+  };
+
+  const handleReset = () => {
+    setName("");
+    setDescription("");
+    onReset();
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-4 bg-purple-700 text-white rounded-md border-4 border-pink-500 shadow-pixel mb-4"
+      className="p-6 bg-purple-700 text-white rounded-md border-4 border-pink-500 shadow-pixel mb-6 relative"
     >
-      <h2 className="text-xl font-bold mb-4 text-center">Create a New Post</h2>
+      <h2 className="text-xl font-bold mb-4 text-center">
+        {isEditing ? "Edit Post" : "Create a New Post"}
+      </h2>
+
+      {isEditing && (
+        <button
+          onClick={handleReset}
+          className="absolute top-2 right-3 text-red-500 hover:text-red-700"
+        >
+          ❌
+        </button>
+      )}
       <div className="mb-4">
         <label className="block text-sm font-medium mb-2" htmlFor="name">
           Name
@@ -53,7 +89,7 @@ const PostForm: React.FC = () => {
         type="submit"
         className="w-full p-2 bg-pink-500 text-black font-bold rounded-md hover:bg-pink-600 transition-all duration-300 shadow-pixel"
       >
-        Create Post 💾
+        {isEditing ? "Edit Post 📝" : "Create Post 💾"}
       </button>
     </form>
   );
