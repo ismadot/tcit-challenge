@@ -21,7 +21,7 @@ const Filter: React.FC<FilterProps> = ({
   return (
     <div className="flex items-center space-x-2">
       <label htmlFor="filter" className="text-retroYellow">
-        Filter:
+        Filter 🔎:
       </label>
       <input
         id="filter"

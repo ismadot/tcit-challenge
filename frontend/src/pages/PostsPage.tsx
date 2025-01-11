@@ -6,6 +6,7 @@ import {
 } from "../store/slices/postSlice";
 import PostFilter from "../components/Filter";
 import PostTable from "../components/PostTable";
+import PostForm from "../components/PostForm";
 
 const PostsPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -41,6 +42,9 @@ const PostsPage: React.FC = () => {
         <PostFilter onFilterChange={handleFilterChange} />
       </div>
       <PostTable posts={filteredPosts} onDelete={handleDelete} />
+      <div className="mt-6">
+        <PostForm />
+      </div>
     </div>
   );
 };

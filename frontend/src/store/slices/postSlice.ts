@@ -45,7 +45,10 @@ const postsSlice = createSlice({
       state.fetchPosts.loading = false;
       state.fetchPosts.error = true;
     },
-    addPostRequest(state) {
+    addPostRequest(
+      state,
+      action: PayloadAction<{ name: string; description: string }>
+    ) {
       state.addPost.loading = true;
       state.addPost.error = false;
     },

@@ -33,7 +33,7 @@ const PostTable: React.FC<PostTableProps> = ({ posts, onDelete }) => {
                 className="px-2 py-1 bg-retroOrange text-gray-900 rounded hover:bg-retroYellow"
                 onClick={() => onDelete(post.id)}
               >
-                Delete
+                Delete ❌
               </button>
             </td>
           </tr>
